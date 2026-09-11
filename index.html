@@ -75,6 +75,7 @@
   *{box-sizing:border-box;}
   body{margin:0;background:var(--bg);color:var(--ink);}
   #app{font-family:var(--font-body);color:var(--ink);background:var(--bg);min-height:100vh;}
+  svg{width:1em;height:1em;flex:none;vertical-align:-0.15em;}
   h1,h2,h3,h4{font-family:var(--font-display);margin:0;text-wrap:balance;letter-spacing:-.01em;}
   p{margin:0;}
   button{font-family:inherit;}
@@ -135,6 +136,48 @@
   .btn[disabled]{opacity:.5;cursor:not-allowed;}
   .gate-foot{margin-top:16px;font-size:11.5px;color:var(--ink-soft);line-height:1.5;}
 
+  .kiosk-launch{margin-top:18px;padding-top:18px;border-top:1px dashed var(--line);}
+  .kiosk-launch-btn{width:100%;display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:var(--radius-m);border:1px solid color-mix(in srgb, var(--accent) 45%, var(--line));background:linear-gradient(155deg, color-mix(in srgb, var(--accent) 14%, var(--surface)), var(--surface));cursor:pointer;text-align:left;transition:transform .15s,box-shadow .15s;}
+  .kiosk-launch-btn:hover{transform:translateY(-2px);box-shadow:var(--shadow-2);}
+  .kiosk-launch-icon{width:38px;height:38px;border-radius:11px;background:var(--accent);color:var(--accent-ink);display:flex;align-items:center;justify-content:center;flex:none;}
+  .kiosk-launch-icon svg{width:20px;height:20px;}
+  .kiosk-launch-text .klt-title{font-weight:700;font-size:13.5px;}
+  .kiosk-launch-text .klt-sub{font-size:11.5px;color:var(--ink-soft);margin-top:2px;line-height:1.4;}
+
+  /* ---------- kiosk (pantalla completa, sin sesión) ---------- */
+  .kiosk-screen{min-height:100vh;background:
+      radial-gradient(1100px 550px at 12% -8%, color-mix(in srgb, var(--accent) 16%, transparent), transparent),
+      radial-gradient(900px 520px at 90% 105%, color-mix(in srgb, var(--primary) 26%, transparent), transparent),
+      var(--ink);
+    color:#fff;display:flex;flex-direction:column;}
+  .kiosk-top{display:flex;align-items:center;justify-content:space-between;padding:18px 26px;flex:none;}
+  .kiosk-brand{display:flex;align-items:center;gap:10px;}
+  .kiosk-brand .mark{width:38px;height:38px;border-radius:11px;background:linear-gradient(155deg,var(--accent),color-mix(in srgb, var(--accent) 60%, white));display:flex;align-items:center;justify-content:center;flex:none;}
+  .kiosk-brand .mark svg{width:20px;height:20px;color:var(--accent-ink);}
+  .kiosk-brand .kb-title{font-family:var(--font-display);font-weight:700;font-size:15px;}
+  .kiosk-brand .kb-sub{font-family:var(--font-mono);font-size:10.5px;color:#aab2c0;text-transform:uppercase;letter-spacing:.06em;}
+  .kiosk-clock{font-family:var(--font-mono);font-size:22px;font-weight:600;text-align:right;color:#fff;}
+  .kiosk-date{font-size:11px;color:#aab2c0;text-align:right;text-transform:capitalize;}
+  .kiosk-exit{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);color:#cfd4dd;border-radius:9px;padding:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-left:14px;}
+  .kiosk-exit:hover{background:rgba(255,255,255,.16);color:#fff;}
+  .kiosk-exit svg{width:16px;height:16px;display:block;}
+  .kiosk-body{flex:1;display:flex;align-items:center;justify-content:center;padding:12px 20px 32px;}
+  .kiosk-card{width:100%;max-width:460px;}
+  .kiosk-h1{font-family:var(--font-display);font-size:24px;font-weight:700;text-align:center;margin-bottom:4px;text-wrap:balance;}
+  .kiosk-h1-sub{text-align:center;color:#aab2c0;font-size:13px;margin-bottom:20px;}
+  .kiosk-select-wrap{margin-bottom:14px;}
+  .kiosk-select-wrap label{display:block;font-size:11px;font-weight:600;color:#aab2c0;text-transform:uppercase;letter-spacing:.05em;margin-bottom:7px;}
+  .kiosk-select-wrap select{width:100%;padding:14px 16px;border-radius:var(--radius-m);border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);color:#fff;font-size:16px;font-family:inherit;font-weight:600;}
+  .kiosk-select-wrap select:focus{border-color:var(--accent);}
+  .kiosk-card .cam-wrap{aspect-ratio:1/1;border-radius:22px;border-color:rgba(255,255,255,.12);}
+  .kiosk-card .cam-actions{margin-top:14px;}
+  .kiosk-card .cam-actions .btn{flex:1;min-height:52px;font-size:14.5px;}
+  .kiosk-foot{text-align:center;color:#8b93a3;font-size:11px;margin-top:20px;line-height:1.5;}
+  @media (min-width:720px){
+    .kiosk-h1{font-size:28px;}
+    .kiosk-card{max-width:520px;}
+  }
+
   /* ---------- shell ---------- */
   .shell{display:grid;grid-template-columns:216px 1fr;min-height:100vh;}
   .rail{background:var(--surface);border-right:1px solid var(--line);padding:20px 14px;display:flex;flex-direction:column;gap:4px;position:sticky;top:0;height:100vh;}
@@ -178,6 +221,8 @@
 
   /* ---------- panels/cards ---------- */
   .panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-l);box-shadow:var(--shadow-1);padding:20px 22px;margin-bottom:20px;}
+  button.panel{font-family:inherit;transition:transform .15s,box-shadow .15s,border-color .15s;}
+  button.panel:hover{transform:translateY(-2px);box-shadow:var(--shadow-2);border-color:var(--primary);}
   .panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:12px;flex-wrap:wrap;}
   .panel-head h3{font-size:15.5px;}
   .panel-head .ph-sub{font-size:12px;color:var(--ink-soft);margin-top:2px;}
@@ -314,6 +359,8 @@
 
   <div id="gate" class="gate hidden"></div>
 
+  <div id="kioskScreen" class="kiosk-screen hidden"></div>
+
   <div id="shell" class="shell hidden">
     <aside class="rail" id="rail"></aside>
     <div class="main">
@@ -370,7 +417,9 @@ const ICONS = {
   shield:'<path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/>',
   building:'<path d="M3 21h18M6 21V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v17M9 8h1M9 12h1M9 16h1M14 8h1M14 12h1M14 16h1"/>',
   inbox:'<path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/>',
-  download:'<path d="M12 3v12M6 11l6 6 6-6"/><path d="M4 21h16"/>'
+  download:'<path d="M12 3v12M6 11l6 6 6-6"/><path d="M4 21h16"/>',
+  expand:'<path d="M8 3H5a2 2 0 0 0-2 2v3"/><path d="M16 3h3a2 2 0 0 1 2 2v3"/><path d="M21 16v3a2 2 0 0 1-2 2h-3"/><path d="M8 21H5a2 2 0 0 1-2-2v-3"/>',
+  tablet:'<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M11 18h2"/>'
 };
 function icon(name){return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${ICONS[name]||''}</svg>`;}
 
@@ -563,7 +612,8 @@ const State = {
   config: {companyName:'Grupo Andes Retail', adminCode:'1234'},
   view: null,
   calMonth: new Date(),
-  camTargetEmployeeId: null
+  camTargetEmployeeId: null,
+  screen: null // null = gate/shell (driven by session) | 'kiosk' = checador público en pantalla completa
 };
 
 function saveSession(s){ State.session = s; try{localStorage.setItem('checador_session', JSON.stringify(s));}catch(e){} }
@@ -642,6 +692,11 @@ async function boot(){
   if(existing && (existing.role!=='empleado' || true)){
     State.session = existing;
   }
+  // Un enlace guardado con #kiosk (ideal para dejar fijo en una tablet) entra
+  // directo al checador público, sin pasar por el login.
+  if(location.hash === '#kiosk' || location.hash === '#checador'){
+    State.screen = 'kiosk';
+  }
   render();
 
   setInterval(tickClock, 1000);
@@ -685,19 +740,28 @@ function subscribeAll(){
 
 function tickClock(){
   const now = new Date();
+  const timeStr2 = now.toLocaleTimeString('es-MX',{hour12:false});
+  const dateStr = now.toLocaleDateString('es-MX',{weekday:'long', day:'numeric', month:'long'});
   const c = $('#clockNow'); const cd = $('#clockDate');
-  if(c) c.textContent = now.toLocaleTimeString('es-MX',{hour12:false});
-  if(cd) cd.textContent = now.toLocaleDateString('es-MX',{weekday:'long', day:'numeric', month:'long'});
+  if(c) c.textContent = timeStr2;
+  if(cd) cd.textContent = dateStr;
+  const kc = $('#kioskClockNow'); const kcd = $('#kioskClockDate');
+  if(kc) kc.textContent = timeStr2;
+  if(kcd) kcd.textContent = dateStr;
 }
 
 /* ============================================================
    RENDER ROOT — switches gate vs shell
 ============================================================ */
 function render(){
-  const flatEmployees = State.employees.map(e=>e.id);
-  if(State.session && State.session.role==='empleado' && !flatEmployees.includes(State.session.employeeId) && State.employees.length){
-    // stale session pointing at a removed employee
+  if(State.screen==='kiosk'){
+    $('#gate').classList.add('hidden');
+    $('#shell').classList.add('hidden');
+    $('#kioskScreen').classList.remove('hidden');
+    renderKioskScreen();
+    return;
   }
+  $('#kioskScreen').classList.add('hidden');
   if(!State.session){
     $('#gate').classList.remove('hidden');
     $('#shell').classList.add('hidden');
@@ -707,6 +771,66 @@ function render(){
     $('#shell').classList.remove('hidden');
     renderShell();
   }
+}
+
+/* ============================================================
+   CHECADOR PÚBLICO — pantalla completa, sin necesidad de iniciar
+   sesión. Pensado para quedar montado en una tablet en la entrada:
+   cualquier persona elige su nombre y valida su propia checada.
+============================================================ */
+function openKioskScreen(){
+  State.screen = 'kiosk';
+  render();
+  requestKioskFullscreen();
+}
+function closeKioskScreen(){
+  kioskTeardown();
+  State.screen = null;
+  if(document.fullscreenElement){ try{ document.exitFullscreen(); }catch(e){} }
+  render();
+}
+function requestKioskFullscreen(){
+  const el = document.getElementById('kioskScreen');
+  if(el && el.requestFullscreen){ el.requestFullscreen().catch(()=>{}); }
+}
+function renderKioskScreen(){
+  const el = $('#kioskScreen');
+  const empOptions = State.employees.map(e=>`<option value="${e.id}" ${State.camTargetEmployeeId===e.id?'selected':''}>${escapeHtml(e.data.name)}</option>`).join('');
+  el.innerHTML = `
+    <div class="kiosk-top">
+      <div class="kiosk-brand">
+        <div class="mark">${icon('clock')}</div>
+        <div>
+          <div class="kb-title">Checador</div>
+          <div class="kb-sub">${escapeHtml(State.config.companyName||'')}</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;">
+        <div>
+          <div class="kiosk-clock mono" id="kioskClockNow">00:00:00</div>
+          <div class="kiosk-date" id="kioskClockDate"></div>
+        </div>
+        <button class="kiosk-exit" data-kiosk-fs title="Pantalla completa">${icon('expand')}</button>
+        <button class="kiosk-exit" data-kiosk-exit title="Salir del checador (RH / Jefe)">${icon('x')}</button>
+      </div>
+    </div>
+    <div class="kiosk-body">
+      <div class="kiosk-card">
+        <div class="kiosk-h1">Marca tu asistencia</div>
+        <div class="kiosk-h1-sub">Elige tu nombre, ubica tu rostro en el marco y presiona “Validar”.</div>
+        <div class="kiosk-select-wrap">
+          <label>Colaborador</label>
+          <select id="kioskEmpSelect">${empOptions || '<option value="">— Sin empleados registrados —</option>'}</select>
+        </div>
+        <div id="publicKioskContainer"></div>
+        <div class="kiosk-foot">${icon('alert')} Simulación de reconocimiento facial: se captura una foto de verificación, no biometría real.</div>
+      </div>
+    </div>
+  `;
+  const sel = $('#kioskEmpSelect');
+  if(sel) sel.addEventListener('change', ()=>{ State.camTargetEmployeeId = sel.value; kioskRender(); });
+  kioskMount('publicKioskContainer', ()=> employeeById(State.camTargetEmployeeId));
+  tickClock();
 }
 
 /* ============================================================
@@ -734,7 +858,7 @@ function renderGate(){
         <button type="button" class="role-btn ${gateRole==='empleado'?'active':''}" data-role="empleado">
           ${icon('users')}
           <div class="rname">Empleado</div>
-          <div class="rdesc">Checar asistencia y solicitar permisos</div>
+          <div class="rdesc">Revisar tus checadas y solicitar permisos</div>
         </button>
         <button type="button" class="role-btn ${gateRole==='jefe'?'active':''}" data-role="jefe">
           ${icon('clipboard')}
@@ -744,13 +868,24 @@ function renderGate(){
         <button type="button" class="role-btn ${gateRole==='rh'?'active':''}" data-role="rh">
           ${icon('shield')}
           <div class="rname">RH / Admin</div>
-          <div class="rdesc">Control total y cámara de registro</div>
+          <div class="rdesc">Control total, empleados y tiendas</div>
         </button>
       </div>
 
       <div id="gateFields"></div>
 
       <button class="btn btn-primary btn-block" id="gateEnter" type="button">Entrar</button>
+
+      <div class="kiosk-launch">
+        <button type="button" class="kiosk-launch-btn" data-open-kiosk>
+          <div class="kiosk-launch-icon">${icon('tablet')}</div>
+          <div class="kiosk-launch-text">
+            <div class="klt-title">Abrir checador en pantalla completa</div>
+            <div class="klt-sub">No necesita iniciar sesión — para la tablet de entrada donde cualquier colaborador marca su asistencia.</div>
+          </div>
+        </button>
+      </div>
+
       <div class="gate-foot">${icon('alert')} Acceso de demostración a nivel de interfaz: no sustituye un sistema de autenticación real. No introduzcas contraseñas verdaderas aquí.</div>
     </div>
   `;
@@ -806,7 +941,6 @@ function renderGate(){
 const NAV = {
   rh: [
     {id:'dashboard', label:'Panel general', icon:'dashboard'},
-    {id:'camara', label:'Cámara de registro', icon:'camera'},
     {id:'empleados', label:'Empleados', icon:'users'},
     {id:'tiendas', label:'Tiendas', icon:'store'},
     {id:'solicitudes', label:'Solicitudes', icon:'clipboard'},
@@ -825,7 +959,6 @@ const NAV = {
 };
 const VIEW_TITLES = {
   dashboard:['Panel general','Resumen de asistencia en tiempo real'],
-  camara:['Cámara de registro','Check-in por reconocimiento facial (simulado)'],
   empleados:['Empleados','Altas, fotos y tiendas asignadas'],
   tiendas:['Tiendas','Sucursales donde el personal puede checar'],
   solicitudes:['Solicitudes','Justificaciones y permisos'],
@@ -866,6 +999,7 @@ function renderRail(){
     ${currentNav().map(n=>`
       <button class="nav-item ${State.view===n.id?'active':''}" data-nav="${n.id}">${icon(n.icon)}<span>${n.label}</span></button>
     `).join('')}
+    <button class="nav-item" data-open-kiosk style="color:var(--accent);font-weight:600;">${icon('tablet')}<span>Abrir checador</span></button>
     <div class="rail-spacer"></div>
     <div class="rail-user">
       ${avatarHtml}
@@ -882,24 +1016,27 @@ function renderRail(){
 // Delegated on `document` (bound once in boot) so logout keeps working no matter
 // how many times the rail/topbar are re-rendered — no risk of a stale/missing listener.
 function handleGlobalClick(e){
-  const t = e.target.closest('[data-logout]');
-  if(t){ kioskTeardown(); clearSession(); render(); }
+  const logoutBtn = e.target.closest('[data-logout]');
+  if(logoutBtn){ kioskTeardown(); clearSession(); render(); return; }
+  const kioskBtn = e.target.closest('[data-open-kiosk]');
+  if(kioskBtn){ openKioskScreen(); return; }
+  const fsBtn = e.target.closest('[data-kiosk-fs]');
+  if(fsBtn){ requestKioskFullscreen(); return; }
+  const exitBtn = e.target.closest('[data-kiosk-exit]');
+  if(exitBtn){ closeKioskScreen(); }
 }
 
 function renderView(){
   const v = $('#view');
   const role = State.session.role;
-  const kioskView = (role==='rh' && State.view==='camara') || (role==='empleado' && State.view==='inicio');
-  if(!kioskView) kioskTeardown();
   if(role==='rh'){
-    if(State.view==='dashboard') return v.innerHTML = viewDashboardAdmin();
-    if(State.view==='camara') return renderCamaraView(v);
+    if(State.view==='dashboard') return v.innerHTML = viewDashboardAdmin(), bindDashboardCommon();
     if(State.view==='empleados') return v.innerHTML = viewEmpleados(true), bindEmpleadosView(true);
     if(State.view==='tiendas') return v.innerHTML = viewTiendas(), bindTiendasView();
     if(State.view==='solicitudes') return v.innerHTML = viewSolicitudes(true), bindSolicitudesView(true);
     if(State.view==='ajustes') return v.innerHTML = viewAjustes(), bindAjustesView();
   } else if(role==='jefe'){
-    if(State.view==='dashboard') return v.innerHTML = viewDashboardJefe();
+    if(State.view==='dashboard') return v.innerHTML = viewDashboardJefe(), bindDashboardCommon();
     if(State.view==='solicitudes') return v.innerHTML = viewSolicitudes(false), bindSolicitudesView(false);
     if(State.view==='empleados') return v.innerHTML = viewEmpleados(false);
   } else if(role==='empleado'){
@@ -944,7 +1081,7 @@ function viewDashboardAdmin(){
       <div class="panel">
         <div class="panel-head">
           <div><h3>Actividad de hoy</h3><div class="ph-sub">Entradas registradas por reconocimiento facial</div></div>
-          <button class="btn btn-accent btn-sm" data-go="camara">${icon('camera')} Ir a cámara</button>
+          <button class="btn btn-accent btn-sm" data-open-kiosk>${icon('tablet')} Abrir checador</button>
         </div>
         ${renderTodayActivityTable()}
       </div>
@@ -1153,37 +1290,6 @@ function kioskRender(){
       if(act==='stop') kioskStopCamera();
     });
   });
-}
-
-function renderCamaraView(v){
-  v.innerHTML = viewCamara();
-  bindDashboardCommon();
-  const sel = $('#camEmpSelect');
-  if(sel) sel.addEventListener('change', ()=>{ State.camTargetEmployeeId = sel.value; kioskRender(); });
-  kioskMount('camKioskContainer', ()=> employeeById(State.camTargetEmployeeId));
-}
-function viewCamara(){
-  const empOptions = State.employees.map(e=>`<option value="${e.id}" ${State.camTargetEmployeeId===e.id?'selected':''}>${escapeHtml(e.data.name)}</option>`).join('');
-  return `
-    <div class="grid-2">
-      <div class="panel">
-        <div class="panel-head"><div><h3>Escáner facial</h3><div class="ph-sub">La cámara queda activa: selecciona al colaborador y presiona “Validar” para registrar su checada</div></div></div>
-
-        <div class="field">
-          <label>Colaborador</label>
-          <select id="camEmpSelect">${empOptions || '<option value="">— Registra empleados primero —</option>'}</select>
-        </div>
-
-        <div id="camKioskContainer"></div>
-        <div class="field-hint" style="margin-top:10px;">${icon('alert')} Simulación: la cámara captura una foto de verificación, no realiza reconocimiento biométrico real. Si el navegador bloquea la cámara (por ejemplo al abrir el archivo local), da de alta el check-in manualmente desde “Empleados”.</div>
-      </div>
-
-      <div class="panel">
-        <div class="panel-head"><div><h3>Check-ins de hoy</h3><div class="ph-sub">${new Date().toLocaleDateString('es-MX',{weekday:'long',day:'numeric',month:'long'})}</div></div></div>
-        ${renderTodayActivityTable()}
-      </div>
-    </div>
-  `;
 }
 
 async function registerCheckin(emp, snapshotDataUrl){
@@ -1551,38 +1657,47 @@ function renderEmpleadoInicio(v){
   const summary = today ? punchesSummary(today).join(' · ') : '';
 
   v.innerHTML = `
-    <div class="grid-2">
-      <div class="panel">
-        <div style="display:flex;gap:16px;align-items:center;">
-          <div class="vcard-photo" style="width:64px;height:64px;border-radius:18px;font-size:22px;${emp.data.photo?`background-image:url('${emp.data.photo}')`:''}">${emp.data.photo?'':initialsOf(emp.data.name)}</div>
-          <div>
-            <h3 style="font-size:19px;">${escapeHtml(emp.data.name)}</h3>
-            <div class="muted" style="font-size:13px;">${escapeHtml(emp.data.puesto||'Colaborador')}</div>
-            <div class="chip-list" style="margin-top:6px;">${stores.map(s=>`<span class="chip">${icon('store')}${escapeHtml(s.data.name)}</span>`).join('')||'<span class="chip">Sin tienda asignada</span>'}</div>
-          </div>
+    <div class="panel">
+      <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap;">
+        <div class="vcard-photo" style="width:64px;height:64px;border-radius:18px;font-size:22px;${emp.data.photo?`background-image:url('${emp.data.photo}')`:''}">${emp.data.photo?'':initialsOf(emp.data.name)}</div>
+        <div style="flex:1;min-width:180px;">
+          <h3 style="font-size:19px;">${escapeHtml(emp.data.name)}</h3>
+          <div class="muted" style="font-size:13px;">${escapeHtml(emp.data.puesto||'Colaborador')}</div>
+          <div class="chip-list" style="margin-top:6px;">${stores.map(s=>`<span class="chip">${icon('store')}${escapeHtml(s.data.name)}</span>`).join('')||'<span class="chip">Sin tienda asignada</span>'}</div>
         </div>
-        <div style="margin:18px 0;padding:14px;border-radius:var(--radius-m);background:var(--surface-2);border:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px;">
-          <div style="min-width:0;">
-            <div class="muted" style="font-size:11px;text-transform:uppercase;letter-spacing:.04em;">Hoy</div>
-            <div class="mono" style="font-size:13.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${summary || 'Sin registrar'}</div>
-          </div>
+        <div style="padding:12px 16px;border-radius:var(--radius-m);background:var(--surface-2);border:1px solid var(--line);text-align:right;min-width:200px;">
+          <div class="muted" style="font-size:11px;text-transform:uppercase;letter-spacing:.04em;">Hoy</div>
+          <div class="mono" style="font-size:13px;font-weight:600;margin:3px 0 6px;">${summary || 'Sin registrar'}</div>
           ${empTodayStatusPill(today)}
         </div>
-        <div id="empKioskContainer"></div>
       </div>
-      <div class="panel">
-        <div class="panel-head"><div><h3>Resumen</h3></div></div>
-        <div class="kpi-row" style="grid-template-columns:1fr 1fr;">
-          ${kpiCard({icon:'clipboard', value:pend, label:'Solicitudes pendientes', color:'var(--warn)', bg:'var(--warn-bg)'})}
-          ${kpiCard({icon:'calendar', value:MONTHS[new Date().getMonth()], label:'Mes en curso', color:'var(--primary)', bg:'var(--info-bg)'})}
+      <div class="field-hint" style="margin-top:14px;">${icon('tablet')} Marca tu entrada, comida y salida en el checador de la entrada (tablet). Aquí revisas tu historial y puedes pedir permisos o justificar una checada.</div>
+    </div>
+
+    <div class="grid-2" style="grid-template-columns:1fr 1fr;">
+      <button type="button" class="panel" data-go="calendario" style="text-align:left;cursor:pointer;border:1px solid var(--line);display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div class="kiosk-launch-icon" style="background:var(--primary);color:var(--primary-ink);">${icon('calendar')}</div>
+          ${icon('chevR')}
         </div>
-        <button class="btn btn-ghost btn-block" data-go="calendario" style="margin-top:6px;">${icon('calendar')} Ver mi calendario</button>
-        <div class="field-hint" style="margin-top:14px;">${icon('alert')} Simulación: la cámara captura una foto de verificación, no realiza reconocimiento biométrico real.</div>
-      </div>
+        <div>
+          <h3 style="font-size:15.5px;">Mi calendario</h3>
+          <div class="muted" style="font-size:12px;margin-top:2px;">Revisa tus entradas, comidas y salidas del mes</div>
+        </div>
+      </button>
+      <button type="button" class="panel" data-go="solicitudes" style="text-align:left;cursor:pointer;border:1px solid var(--line);display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div class="kiosk-launch-icon" style="background:var(--accent);">${icon('clipboard')}</div>
+          ${icon('chevR')}
+        </div>
+        <div>
+          <h3 style="font-size:15.5px;">Mis solicitudes</h3>
+          <div class="muted" style="font-size:12px;margin-top:2px;">${pend>0? `${pend} solicitud(es) pendiente(s) de tu jefe/RH` : 'Justifica una checada o pide un permiso'}</div>
+        </div>
+      </button>
     </div>
   `;
   bindDashboardCommon();
-  kioskMount('empKioskContainer', ()=> employeeById(State.session.employeeId));
 }
 
 /* ============================================================
