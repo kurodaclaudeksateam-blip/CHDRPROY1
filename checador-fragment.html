@@ -139,39 +139,51 @@
   .kiosk-launch-text .klt-title{font-weight:700;font-size:13.5px;}
   .kiosk-launch-text .klt-sub{font-size:11.5px;color:var(--ink-soft);margin-top:2px;line-height:1.4;}
 
-  /* ---------- kiosk (pantalla completa, sin sesión) ---------- */
-  .kiosk-screen{min-height:100vh;background:
-      radial-gradient(1100px 550px at 12% -8%, color-mix(in srgb, var(--accent) 16%, transparent), transparent),
-      radial-gradient(900px 520px at 90% 105%, color-mix(in srgb, var(--primary) 26%, transparent), transparent),
-      var(--ink);
-    color:#fff;display:flex;flex-direction:column;}
-  .kiosk-top{display:flex;align-items:center;justify-content:space-between;padding:18px 26px;flex:none;}
-  .kiosk-brand{display:flex;align-items:center;gap:10px;}
-  .kiosk-brand .mark{width:38px;height:38px;border-radius:11px;background:linear-gradient(155deg,var(--accent),color-mix(in srgb, var(--accent) 60%, white));display:flex;align-items:center;justify-content:center;flex:none;}
-  .kiosk-brand .mark svg{width:20px;height:20px;color:var(--accent-ink);}
-  .kiosk-brand .kb-title{font-family:var(--font-display);font-weight:700;font-size:15px;}
-  .kiosk-brand .kb-sub{font-family:var(--font-mono);font-size:10.5px;color:#aab2c0;text-transform:uppercase;letter-spacing:.06em;}
-  .kiosk-clock{font-family:var(--font-mono);font-size:22px;font-weight:600;text-align:right;color:#fff;}
-  .kiosk-date{font-size:11px;color:#aab2c0;text-align:right;text-transform:capitalize;}
-  .kiosk-exit{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.14);color:#cfd4dd;border-radius:9px;padding:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-left:14px;}
-  .kiosk-exit:hover{background:rgba(255,255,255,.16);color:#fff;}
+  /* ---------- kiosk (pantalla completa, sin sesión, cámara de fondo) ---------- */
+  .kiosk-screen{min-height:100vh;position:relative;overflow:hidden;background:var(--ink);color:#fff;}
+  .kiosk-video-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+  .kiosk-scrim{position:absolute;inset:0;background:linear-gradient(180deg, rgba(9,12,17,.6) 0%, rgba(9,12,17,.12) 28%, rgba(9,12,17,.18) 72%, rgba(9,12,17,.7) 100%);transition:background .25s;}
+  .kiosk-scrim-strong{background:rgba(8,10,15,.86) !important;}
+  .kiosk-overlay{position:absolute;inset:0;display:flex;flex-direction:column;}
+  .kiosk-topbar{display:flex;align-items:center;justify-content:space-between;padding:18px 26px;flex:none;}
+  .kiosk-brand-mini{display:flex;align-items:center;gap:10px;pointer-events:none;}
+  .kiosk-brand-mini .mark{width:36px;height:36px;border-radius:10px;background:linear-gradient(155deg,var(--accent),color-mix(in srgb, var(--accent) 60%, white));display:flex;align-items:center;justify-content:center;flex:none;}
+  .kiosk-brand-mini .mark svg{width:19px;height:19px;color:var(--accent-ink);}
+  .kiosk-brand-mini .kb-title{font-family:var(--font-display);font-weight:700;font-size:14.5px;}
+  .kiosk-brand-mini .kb-sub{font-family:var(--font-mono);font-size:10px;color:#c2c8d3;text-transform:uppercase;letter-spacing:.06em;}
+  .kiosk-clock{font-family:var(--font-mono);font-size:21px;font-weight:600;text-align:right;color:#fff;pointer-events:none;}
+  .kiosk-date{font-size:10.5px;color:#c2c8d3;text-align:right;text-transform:capitalize;pointer-events:none;}
+  .kiosk-exit{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);color:#dfe2e8;border-radius:9px;padding:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-left:12px;flex:none;}
+  .kiosk-exit:hover{background:rgba(255,255,255,.2);color:#fff;}
   .kiosk-exit svg{width:16px;height:16px;display:block;}
-  .kiosk-body{flex:1;display:flex;align-items:center;justify-content:center;padding:12px 20px 32px;}
-  .kiosk-card{width:100%;max-width:460px;}
-  .kiosk-h1{font-family:var(--font-display);font-size:24px;font-weight:700;text-align:center;margin-bottom:4px;text-wrap:balance;}
-  .kiosk-h1-sub{text-align:center;color:#aab2c0;font-size:13px;margin-bottom:20px;}
-  .kiosk-select-wrap{margin-bottom:14px;}
-  .kiosk-select-wrap label{display:block;font-size:11px;font-weight:600;color:#aab2c0;text-transform:uppercase;letter-spacing:.05em;margin-bottom:7px;}
-  .kiosk-select-wrap select{width:100%;padding:14px 16px;border-radius:var(--radius-m);border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.06);color:#fff;font-size:16px;font-family:inherit;font-weight:600;}
-  .kiosk-select-wrap select:focus{border-color:var(--accent);}
-  .kiosk-card .cam-wrap{aspect-ratio:1/1;border-radius:22px;border-color:rgba(255,255,255,.12);}
-  .kiosk-card .cam-actions{margin-top:14px;}
-  .kiosk-card .cam-actions .btn{flex:1;min-height:52px;font-size:14.5px;}
-  .kiosk-foot{text-align:center;color:#8b93a3;font-size:11px;margin-top:20px;line-height:1.5;}
-  @media (min-width:720px){
-    .kiosk-h1{font-size:28px;}
-    .kiosk-card{max-width:520px;}
-  }
+  .kiosk-center{flex:1;display:flex;align-items:center;justify-content:center;padding:24px;}
+  .kiosk-center-msg{text-align:center;max-width:360px;}
+  .kiosk-big-icon{width:60px;height:60px;margin:0 auto 16px;color:#fff;opacity:.85;}
+  .kiosk-big-icon svg{width:100%;height:100%;}
+  .kiosk-msg-title{font-family:var(--font-display);font-size:19px;font-weight:700;text-wrap:balance;}
+  .kiosk-msg-sub{color:#c7cdd8;font-size:12.5px;margin-top:8px;line-height:1.5;}
+  .kiosk-tap-hint{text-align:center;cursor:pointer;animation:tapPulse 2.6s ease-in-out infinite;padding:20px;}
+  .kiosk-tap-icon{width:76px;height:76px;border-radius:50%;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;}
+  .kiosk-tap-icon svg{width:32px;height:32px;color:#fff;}
+  .kiosk-tap-hint .kiosk-msg-title{font-size:23px;}
+  @keyframes tapPulse{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(1.04);opacity:.88;}}
+  .kiosk-verifying-ring{width:110px;height:110px;border-radius:50%;border:3px solid rgba(255,255,255,.18);border-top-color:var(--accent);margin:0 auto 18px;animation:kioskSpin 1s linear infinite;}
+  @keyframes kioskSpin{to{transform:rotate(360deg);}}
+
+  .kiosk-picker{width:100%;max-width:640px;max-height:84vh;display:flex;flex-direction:column;background:rgba(19,23,30,.94);border:1px solid rgba(255,255,255,.14);border-radius:26px;padding:24px;backdrop-filter:blur(10px);box-shadow:var(--shadow-3);animation:riseIn .25s cubic-bezier(.2,.8,.2,1) both;}
+  .kiosk-search{width:100%;padding:15px 16px;border-radius:13px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;font-size:16px;font-family:inherit;}
+  .kiosk-search::placeholder{color:#9aa2b0;}
+  .kiosk-search:focus{border-color:var(--accent);}
+  .kiosk-picker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:10px;overflow-y:auto;margin-top:16px;padding-right:4px;flex:1;}
+  .kiosk-pick-tile{display:flex;flex-direction:column;align-items:center;gap:8px;padding:14px 8px;border-radius:16px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);cursor:pointer;color:#fff;font-family:inherit;transition:background .15s,transform .15s;}
+  .kiosk-pick-tile:hover{background:rgba(255,255,255,.15);transform:translateY(-2px);}
+  .kiosk-pick-tile:active{transform:translateY(0) scale(.97);}
+  .kiosk-pick-avatar{width:50px;height:50px;border-radius:50%;background:var(--primary);color:var(--primary-ink);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;background-size:cover;background-position:center;flex:none;}
+  .kiosk-pick-name{font-size:12px;font-weight:600;text-align:center;line-height:1.25;}
+  .kiosk-picker-empty{grid-column:1/-1;text-align:center;color:#9aa2b0;font-size:12.5px;padding:20px 0;}
+
+  .kiosk-result{text-align:center;background:rgba(19,23,30,.9);border:1px solid rgba(255,255,255,.14);border-radius:26px;padding:36px 42px;backdrop-filter:blur(8px);animation:kioskPop .35s cubic-bezier(.2,.8,.2,1) both;box-shadow:var(--shadow-3);}
+  @keyframes kioskPop{from{opacity:0;transform:scale(.94);}to{opacity:1;transform:scale(1);}}
 
   /* ---------- shell ---------- */
   .shell{display:grid;grid-template-columns:216px 1fr;min-height:100vh;}
@@ -256,9 +268,7 @@
   .scan-corner.br{bottom:8%;right:8%;border-bottom:3px solid;border-right:3px solid;border-radius:0 0 6px 0;}
   .cam-status{position:absolute;bottom:10px;left:10px;right:10px;background:rgba(11,14,19,.72);color:#fff;font-family:var(--font-mono);font-size:11.5px;padding:7px 10px;border-radius:8px;text-align:center;backdrop-filter:blur(3px);}
   .cam-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;}
-  .kiosk-result{flex-direction:column;justify-content:center;align-items:center;gap:5px;padding:20px;background:linear-gradient(165deg, color-mix(in srgb, var(--success) 20%, #0b0e13), #0b0e13);animation:kioskPop .35s cubic-bezier(.2,.8,.2,1) both;}
-  @keyframes kioskPop{from{opacity:0;transform:scale(.96);}to{opacity:1;transform:scale(1);}}
-  .kiosk-check{width:52px;height:52px;border-radius:50%;background:var(--success);color:#fff;display:flex;align-items:center;justify-content:center;margin-bottom:6px;}
+  .kiosk-check{width:52px;height:52px;border-radius:50%;background:var(--success);color:#fff;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;}
   .kiosk-check svg{width:26px;height:26px;}
   .kiosk-result-name{color:#fff;font-family:var(--font-display);font-weight:700;font-size:17px;text-align:center;}
   .kiosk-result-type{color:#cfe3d6;font-size:12.5px;}
@@ -605,8 +615,7 @@ const State = {
   config: {companyName:'Grupo Andes Retail', adminCode:'1234'},
   view: null,
   calMonth: new Date(),
-  camTargetEmployeeId: null,
-  screen: null // null = gate/shell (driven by session) | 'kiosk' = checador público en pantalla completa
+  screen: null // null = gate/shell (según la sesión) | 'kiosk' = checador público en pantalla completa
 };
 
 function saveSession(s){ State.session = s; try{localStorage.setItem('checador_session', JSON.stringify(s));}catch(e){} }
@@ -787,43 +796,7 @@ function requestKioskFullscreen(){
   if(el && el.requestFullscreen){ el.requestFullscreen().catch(()=>{}); }
 }
 function renderKioskScreen(){
-  const el = $('#kioskScreen');
-  const empOptions = State.employees.map(e=>`<option value="${e.id}" ${State.camTargetEmployeeId===e.id?'selected':''}>${escapeHtml(e.data.name)}</option>`).join('');
-  el.innerHTML = `
-    <div class="kiosk-top">
-      <div class="kiosk-brand">
-        <div class="mark">${icon('clock')}</div>
-        <div>
-          <div class="kb-title">Checador</div>
-          <div class="kb-sub">${escapeHtml(State.config.companyName||'')}</div>
-        </div>
-      </div>
-      <div style="display:flex;align-items:center;">
-        <div>
-          <div class="kiosk-clock mono" id="kioskClockNow">00:00:00</div>
-          <div class="kiosk-date" id="kioskClockDate"></div>
-        </div>
-        <button class="kiosk-exit" data-kiosk-fs title="Pantalla completa">${icon('expand')}</button>
-        <button class="kiosk-exit" data-kiosk-exit title="Salir del checador (RH / Jefe)">${icon('x')}</button>
-      </div>
-    </div>
-    <div class="kiosk-body">
-      <div class="kiosk-card">
-        <div class="kiosk-h1">Marca tu asistencia</div>
-        <div class="kiosk-h1-sub">Elige tu nombre, ubica tu rostro en el marco y presiona “Validar”.</div>
-        <div class="kiosk-select-wrap">
-          <label>Colaborador</label>
-          <select id="kioskEmpSelect">${empOptions || '<option value="">— Sin empleados registrados —</option>'}</select>
-        </div>
-        <div id="publicKioskContainer"></div>
-        <div class="kiosk-foot">${icon('alert')} Simulación de reconocimiento facial: se captura una foto de verificación, no biometría real.</div>
-      </div>
-    </div>
-  `;
-  const sel = $('#kioskEmpSelect');
-  if(sel) sel.addEventListener('change', ()=>{ State.camTargetEmployeeId = sel.value; kioskRender(); });
-  kioskMount('publicKioskContainer', ()=> employeeById(State.camTargetEmployeeId));
-  tickClock();
+  kioskMount('kioskScreen');
 }
 
 /* ============================================================
@@ -1171,14 +1144,14 @@ function viewDashboardJefe(){
    en vivo; "Validar" captura, verifica y registra la checada en un
    solo paso, mostrando de inmediato nombre, tipo de checada y hora.
 ============================================================ */
-const Kiosk = {stream:null, state:'idle', errorMsg:'', result:null, containerId:null, getEmployee:null, token:0};
+// Estados: idle | starting | live | picking | verifying | result | done | error
+const Kiosk = {stream:null, state:'idle', errorMsg:'', result:null, containerId:null, token:0, search:''};
 
-function kioskMount(containerId, getEmployee){
+function kioskMount(containerId){
   if(Kiosk.containerId === containerId){
-    // Already mounted on this same container (a data refresh re-rendered the
-    // view around it) — just refresh the employee getter and repaint the
-    // CURRENT state, without tearing down the live stream or a result in progress.
-    Kiosk.getEmployee = getEmployee;
+    // Ya montado en este contenedor (un refresco de datos volvió a dibujar
+    // la pantalla alrededor) — solo repinta el estado ACTUAL, sin cortar la
+    // transmisión ni interrumpir un resultado en pantalla.
     kioskRender();
     return;
   }
@@ -1186,15 +1159,14 @@ function kioskMount(containerId, getEmployee){
   Kiosk.token++;
   const myToken = Kiosk.token;
   Kiosk.containerId = containerId;
-  Kiosk.getEmployee = getEmployee;
-  Kiosk.state = 'idle'; Kiosk.result = null; Kiosk.errorMsg = '';
+  Kiosk.state = 'idle'; Kiosk.result = null; Kiosk.errorMsg = ''; Kiosk.search = '';
   kioskRender();
   kioskStart(myToken);
 }
 function kioskTeardown(){
   Kiosk.token++;
   if(Kiosk.stream){ try{ Kiosk.stream.getTracks().forEach(t=>t.stop()); }catch(e){} Kiosk.stream=null; }
-  Kiosk.containerId = null; Kiosk.getEmployee = null; Kiosk.state = 'idle'; Kiosk.result = null;
+  Kiosk.containerId = null; Kiosk.state = 'idle'; Kiosk.result = null;
 }
 async function kioskStart(myToken){
   Kiosk.state = 'starting'; kioskRender();
@@ -1207,22 +1179,22 @@ async function kioskStart(myToken){
     Kiosk.state = 'error'; Kiosk.errorMsg = (err && err.message) || 'No se pudo acceder a la cámara.'; kioskRender();
   }
 }
-function kioskStopCamera(){
-  if(Kiosk.stream){ try{ Kiosk.stream.getTracks().forEach(t=>t.stop()); }catch(e){} Kiosk.stream=null; }
-  Kiosk.state = 'idle'; kioskRender();
+function kioskOpenPicker(){
+  if(Kiosk.state !== 'live') return;
+  Kiosk.search = '';
+  Kiosk.state = 'picking';
+  kioskRender();
 }
-async function kioskValidate(){
+async function kioskPickEmployee(employeeId){
+  const emp = employeeById(employeeId);
+  if(!emp) return;
   const myToken = Kiosk.token;
-  const emp = Kiosk.getEmployee && Kiosk.getEmployee();
-  if(!emp){ toast('Selecciona un colaborador primero','err'); return; }
-  if(!Kiosk.stream || Kiosk.state!=='live') return;
-  const container = document.getElementById(Kiosk.containerId);
-  const video = container && container.querySelector('#kioskVideo');
-  if(!video) return;
   Kiosk.state = 'verifying'; kioskRender();
   await new Promise(r=>setTimeout(r, 650));
   if(myToken !== Kiosk.token) return;
-  const snap = compressImage(video, 240, 0.72);
+  const container = document.getElementById(Kiosk.containerId);
+  const video = container && container.querySelector('#kioskVideo');
+  const snap = video ? compressImage(video, 240, 0.72) : null;
   const res = await registerCheckin(emp, snap);
   if(myToken !== Kiosk.token) return;
   if(res){ Kiosk.result = Object.assign({employeeName: emp.data.name}, res); Kiosk.state = 'result'; }
@@ -1239,11 +1211,22 @@ function kioskRender(){
   if(!Kiosk.containerId) return;
   const container = document.getElementById(Kiosk.containerId);
   if(!container) return;
-  const emp = Kiosk.getEmployee && Kiosk.getEmployee();
-  let inner;
-  if(Kiosk.state==='result' && Kiosk.result){
+
+  const showVideo = (Kiosk.state==='live' || Kiosk.state==='picking' || Kiosk.state==='verifying') && Kiosk.stream;
+
+  let center;
+  if(Kiosk.state==='error'){
+    center = `<div class="kiosk-center-msg">
+      <div class="kiosk-big-icon">${icon('alert')}</div>
+      <div class="kiosk-msg-title">No se pudo acceder a la cámara</div>
+      <div class="kiosk-msg-sub">${escapeHtml(Kiosk.errorMsg)}</div>
+      <button type="button" class="btn btn-accent" data-kiosk-retry style="margin-top:18px;">${icon('camera')} Reintentar</button>
+    </div>`;
+  } else if(Kiosk.state==='starting' || Kiosk.state==='idle'){
+    center = `<div class="kiosk-center-msg"><div class="kiosk-big-icon">${icon('camera')}</div><div class="kiosk-msg-title">Iniciando cámara…</div></div>`;
+  } else if(Kiosk.state==='result' && Kiosk.result){
     const r = Kiosk.result;
-    inner = `<div class="cam-wrap kiosk-result">
+    center = `<div class="kiosk-result">
       <div class="kiosk-check">${icon('check')}</div>
       <div class="kiosk-result-name">${escapeHtml(r.employeeName)}</div>
       <div class="kiosk-result-type">${escapeHtml(r.label)}</div>
@@ -1251,37 +1234,96 @@ function kioskRender(){
       ${r.warn? `<div class="kiosk-result-warn">${icon('alert')} Muy cercana a tu checada anterior — verifica si fue correcta</div>`:''}
     </div>`;
   } else if(Kiosk.state==='done'){
-    inner = `<div class="cam-wrap"><div class="cam-empty" style="color:var(--success);">${icon('check')}<div style="margin-top:8px;">${emp?escapeHtml(emp.data.name)+' ya completó sus 4 checadas de hoy':'Checadas del día completas'}</div></div></div>`;
-  } else if(Kiosk.state==='error'){
-    inner = `<div class="cam-wrap"><div class="cam-empty">${icon('alert')}<div style="margin-top:8px;">No se pudo acceder a la cámara.<br>${escapeHtml(Kiosk.errorMsg)}</div></div></div>`;
-  } else if(Kiosk.state==='live' || Kiosk.state==='verifying'){
-    inner = `<div class="cam-wrap">
-      <video id="kioskVideo" autoplay playsinline muted></video>
-      <div class="scan-corner tl"></div><div class="scan-corner tr"></div><div class="scan-corner bl"></div><div class="scan-corner br"></div>
-      ${Kiosk.state==='verifying' ? '<div class="scan-ring"></div>' : ''}
-      <div class="cam-status">${Kiosk.state==='verifying' ? 'Verificando…' : (emp? `Listo para validar a ${escapeHtml(emp.data.name)}` : 'Selecciona un colaborador para continuar')}</div>
+    center = `<div class="kiosk-center-msg"><div class="kiosk-big-icon" style="color:var(--success);opacity:1;">${icon('check')}</div><div class="kiosk-msg-title">Ya completaste tus 4 checadas de hoy</div></div>`;
+  } else if(Kiosk.state==='verifying'){
+    center = `<div class="kiosk-center-msg"><div class="kiosk-verifying-ring"></div><div class="kiosk-msg-title">Verificando…</div></div>`;
+  } else if(Kiosk.state==='picking'){
+    center = kioskPickerHtml();
+  } else if(Kiosk.state==='live'){
+    center = `<div class="kiosk-tap-hint">
+      <div class="kiosk-tap-icon">${icon('check')}</div>
+      <div class="kiosk-msg-title">Toca la pantalla para marcar tu asistencia</div>
+      <div class="kiosk-msg-sub">Ubica tu rostro en la cámara y toca en cualquier parte</div>
     </div>`;
   } else {
-    inner = `<div class="cam-wrap"><div class="cam-empty">${icon('camera')}<div style="margin-top:8px;">Iniciando cámara…</div></div></div>`;
+    center = '';
   }
-  const actions = `<div class="cam-actions">
-    ${Kiosk.state==='error' ? `<button class="btn btn-primary" data-kiosk="retry">${icon('camera')} Reintentar</button>` : ''}
-    ${(Kiosk.state==='idle'||Kiosk.state==='done') ? `<button class="btn btn-primary" data-kiosk="retry">${icon('camera')} Activar cámara</button>` : ''}
-    ${Kiosk.state==='live' ? `<button class="btn btn-accent" data-kiosk="validate" ${emp?'':'disabled'}>${icon('check')} Validar</button>` : ''}
-    ${(Kiosk.state==='live'||Kiosk.state==='error') ? `<button class="btn btn-ghost" data-kiosk="stop">Apagar cámara</button>` : ''}
-  </div>`;
-  container.innerHTML = inner + actions;
-  if((Kiosk.state==='live'||Kiosk.state==='verifying') && Kiosk.stream){
+
+  container.innerHTML = `
+    ${showVideo ? '<video id="kioskVideo" autoplay playsinline muted class="kiosk-video-bg"></video>' : ''}
+    <div class="kiosk-scrim ${Kiosk.state==='picking'?'kiosk-scrim-strong':''}"></div>
+    <div class="kiosk-overlay" id="kioskOverlay">
+      <div class="kiosk-topbar">
+        <div class="kiosk-brand-mini">
+          <div class="mark">${icon('clock')}</div>
+          <div>
+            <div class="kb-title">Checador</div>
+            <div class="kb-sub">${escapeHtml(State.config.companyName||'')}</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;">
+          <div>
+            <div class="kiosk-clock mono" id="kioskClockNow">00:00:00</div>
+            <div class="kiosk-date" id="kioskClockDate"></div>
+          </div>
+          <button class="kiosk-exit" data-kiosk-fs title="Pantalla completa">${icon('expand')}</button>
+          <button class="kiosk-exit" data-kiosk-exit title="Salir del checador (RH / Jefe)">${icon('x')}</button>
+        </div>
+      </div>
+      <div class="kiosk-center">${center}</div>
+    </div>
+  `;
+
+  if(showVideo){
     const v = container.querySelector('#kioskVideo');
     if(v && v.srcObject !== Kiosk.stream) v.srcObject = Kiosk.stream;
   }
-  container.querySelectorAll('[data-kiosk]').forEach(b=>{
-    b.addEventListener('click', ()=>{
-      const act = b.dataset.kiosk;
-      if(act==='retry') kioskStart(Kiosk.token);
-      if(act==='validate') kioskValidate();
-      if(act==='stop') kioskStopCamera();
+  if(Kiosk.state==='picking'){
+    const s = container.querySelector('#kioskSearch');
+    if(s){ s.focus(); const p = s.value.length; s.setSelectionRange(p, p); }
+  }
+
+  const overlay = container.querySelector('#kioskOverlay');
+  overlay.addEventListener('click', (e)=>{
+    if(e.target.closest('[data-kiosk-fs],[data-kiosk-exit]')) return;
+    if(Kiosk.state==='live'){ kioskOpenPicker(); return; }
+    if(Kiosk.state==='picking' && !e.target.closest('.kiosk-picker')){ Kiosk.state='live'; kioskRender(); }
+  });
+  const retryBtn = container.querySelector('[data-kiosk-retry]');
+  if(retryBtn) retryBtn.addEventListener('click', (e)=>{ e.stopPropagation(); kioskStart(Kiosk.token); });
+
+  if(Kiosk.state==='picking') bindKioskPicker(container);
+
+  tickClock();
+}
+function kioskPickerHtml(){
+  const q = Kiosk.search.trim().toLowerCase();
+  const list = State.employees.filter(e => !q || (e.data.name||'').toLowerCase().includes(q));
+  return `
+    <div class="kiosk-picker">
+      <div class="kiosk-msg-title" style="margin-bottom:12px;">¿Quién eres?</div>
+      <input type="text" id="kioskSearch" class="kiosk-search" placeholder="Busca tu nombre…" value="${escapeHtml(Kiosk.search)}" autocomplete="off">
+      <div class="kiosk-picker-grid">
+        ${list.length ? list.map(e=>`
+          <button type="button" class="kiosk-pick-tile" data-pick="${e.id}">
+            <div class="kiosk-pick-avatar" style="${e.data.photo?`background-image:url('${e.data.photo}')`:''}">${e.data.photo?'':initialsOf(e.data.name)}</div>
+            <div class="kiosk-pick-name">${escapeHtml(e.data.name)}</div>
+          </button>
+        `).join('') : `<div class="kiosk-picker-empty">${State.employees.length? 'Sin resultados.' : 'RH aún no ha registrado empleados.'}</div>`}
+      </div>
+    </div>
+  `;
+}
+function bindKioskPicker(container){
+  const search = container.querySelector('#kioskSearch');
+  if(search){
+    search.addEventListener('input', ()=>{
+      Kiosk.search = search.value;
+      kioskRender();
     });
+  }
+  container.querySelectorAll('[data-pick]').forEach(b=>{
+    b.addEventListener('click', ()=> kioskPickEmployee(b.dataset.pick));
   });
 }
 
