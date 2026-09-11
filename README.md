@@ -17,13 +17,18 @@ App web de control de asistencia para pruebas: un **checador público en pantall
 
 ### El checador (tablet de entrada)
 
-El botón **"Abrir checador en pantalla completa"** en la pantalla de inicio de sesión (o el enlace con `#kiosk` al final, p. ej. `index.html#kiosk`) abre el checador **sin pedir login** — es la pantalla que se deja fija en la tablet de la entrada. Cualquier colaborador elige su nombre en el selector, la cámara queda **siempre activa** y el botón **"Validar"** captura, verifica y registra la checada en un solo paso, mostrando de inmediato nombre, tipo de checada (entrada/salida a comer/regreso/salida) y hora. Un botón pequeño de pantalla completa y otro de salida (✕) quedan en la esquina superior derecha para que RH/Jefe puedan reconfigurar la tablet.
+El botón **"Abrir checador en pantalla completa"** en la pantalla de inicio de sesión (o el enlace con `#kiosk` al final, p. ej. `index.html#kiosk`) abre el checador **sin pedir login** — es la pantalla que se deja fija en la tablet de la entrada. La cámara ocupa toda la pantalla y **nadie selecciona nada**: el checador compara el rostro frente a la cámara contra las fotos de perfil de los empleados y, en cuanto encuentra una coincidencia, captura, verifica y registra la checada sola, mostrando nombre, tipo de checada (entrada/salida a comer/regreso/salida), hora y **% de similitud facial**. Si no reconoce a nadie (o el reconocimiento no está disponible), aparece un botón "¿No te reconoce? Busca tu nombre" como respaldo manual. Un botón pequeño de pantalla completa y otro de salida (✕) quedan en la esquina superior derecha para que RH/Jefe puedan reconfigurar la tablet.
 
 RH y Jefe también pueden abrirlo desde dentro de su sesión con el botón **"Abrir checador"** en la barra lateral.
 
-### Notas de la cámara
+### Reconocimiento facial: cómo funciona y sus límites
 
-El "reconocimiento facial" es una **simulación visual** (captura y muestra una foto de verificación), no biometría real. Si el navegador la bloquea (frecuente al abrir el archivo directamente con `file://`), aparece un aviso claro con botón para reintentar — prueba sirviendo el archivo por `https://` o `localhost` para acceso real a la cámara.
+El checador usa [face-api.js](https://github.com/justadudewhohacks/face-api.js) (se carga desde `cdn.jsdelivr.net`) para detectar el rostro y comparar su "huella" con la de la foto de perfil de cada empleado, calculando un % de similitud a partir de la distancia entre ambos vectores faciales — **no es biometría de nivel empresarial**, es un modelo ligero pensado para correr en el navegador, y funciona mejor con buena luz y la foto de perfil de frente.
+
+- **Los modelos se descargan de un CDN externo en tiempo real** (`justadudewhohacks.github.io/face-api.js/models`). En `index.html`, servido normal (https/localhost) o abierto como archivo local, esto funciona sin problema — ya lo probamos: los tres modelos cargan correctamente.
+- **Dentro del Artifact publicado en claude.ai no va a funcionar** — el sandbox del Artifact bloquea las descargas de red hacia hosts fuera de su lista permitida (los modelos no están en esa lista). El checador lo detecta solo y **cae de forma automática** al buscador de nombre manual, con un aviso claro ("Reconocimiento facial no disponible aquí — busca tu nombre"). Nunca se rompe, solo pierde el paso automático.
+- Un empleado sin foto de perfil no puede reconocerse automáticamente — hay que darlo de alta con foto desde RH → Empleados.
+- Para que la tablet reconozca a alguien que se dio de alta después de abrir el checador, hay que volver a abrirlo (los rostros se calculan una vez al iniciar).
 
 ### Checadas por día
 

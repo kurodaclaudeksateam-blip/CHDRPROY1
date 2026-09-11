@@ -175,6 +175,18 @@
   .kiosk-verifying-ring{width:110px;height:110px;border-radius:50%;border:3px solid rgba(255,255,255,.18);border-top-color:var(--accent);margin:0 auto 18px;animation:kioskSpin 1s linear infinite;}
   @keyframes kioskSpin{to{transform:rotate(360deg);}}
 
+  .kiosk-scan-hint{text-align:center;padding:20px;max-width:340px;}
+  .kiosk-scan-ring{width:88px;height:88px;border-radius:50%;border:2px solid rgba(255,255,255,.3);margin:0 auto 18px;display:flex;align-items:center;justify-content:center;position:relative;animation:scanBreathe 2.2s ease-in-out infinite;}
+  .kiosk-scan-ring::before{content:"";position:absolute;inset:-8px;border-radius:50%;border:2px solid color-mix(in srgb, var(--accent) 70%, transparent);opacity:0;animation:scanPing 2.2s ease-out infinite;}
+  .kiosk-scan-ring-inner{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:#fff;opacity:.85;}
+  .kiosk-scan-ring-inner svg{width:34px;height:34px;}
+  @keyframes scanBreathe{0%,100%{transform:scale(1);}50%{transform:scale(1.05);}}
+  @keyframes scanPing{0%{transform:scale(.9);opacity:.7;}100%{transform:scale(1.35);opacity:0;}}
+  .kiosk-manual-link{margin-top:18px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);color:#dfe2e8;font-size:12.5px;font-weight:600;padding:11px 18px;border-radius:99px;cursor:pointer;font-family:inherit;}
+  .kiosk-manual-link:hover{background:rgba(255,255,255,.16);color:#fff;}
+  .kiosk-result-sim{display:inline-flex;align-items:center;gap:5px;background:var(--success-bg);color:var(--success);font-size:11.5px;font-weight:600;padding:4px 11px;border-radius:99px;margin:6px 0;}
+  .kiosk-result-sim svg{width:12px;height:12px;}
+
   .kiosk-picker{width:100%;max-width:640px;max-height:84vh;display:flex;flex-direction:column;background:rgba(19,23,30,.94);border:1px solid rgba(255,255,255,.14);border-radius:26px;padding:24px;backdrop-filter:blur(10px);box-shadow:var(--shadow-3);animation:riseIn .25s cubic-bezier(.2,.8,.2,1) both;}
   .kiosk-search{width:100%;padding:15px 16px;border-radius:13px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;font-size:16px;font-family:inherit;}
   .kiosk-search::placeholder{color:#9aa2b0;}
@@ -398,6 +410,7 @@
   <div id="modalRoot"></div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/face-api.js@0.22.2/dist/face-api.min.js"></script>
 <script>
 (function(){
 "use strict";
@@ -695,6 +708,7 @@ async function boot(){
 
   await ensureSeed();
   subscribeAll();
+  initFaceEngine(); // se descarga en segundo plano mientras se ve el login, así ya está listo cuando se abra el checador
 
   $('#boot').classList.add('hidden');
   const existing = loadSession();
@@ -1146,13 +1160,75 @@ function viewDashboardJefe(){
 }
 
 /* ============================================================
-   CÁMARA — kiosco de check-in facial simulado.
+   RECONOCIMIENTO FACIAL (face-api.js) — compara el rostro visto por
+   la cámara contra la foto de perfil de cada empleado y calcula un
+   % de similitud. Los modelos se descargan de un CDN externo en
+   tiempo de ejecución: si la red los bloquea (por ejemplo dentro del
+   Artifact publicado, cuyo CSP no permite esas descargas), el
+   checador se degrada automáticamente a buscar tu nombre a mano —
+   nunca se rompe, solo pierde el paso automático.
+============================================================ */
+const FACE_MODEL_URL = 'https://justadudewhohacks.github.io/face-api.js/models';
+const FaceEngine = {ready:false, loading:false, failed:false, promise:null};
+function initFaceEngine(){
+  if(FaceEngine.promise) return FaceEngine.promise;
+  FaceEngine.loading = true;
+  FaceEngine.promise = (async ()=>{
+    try{
+      if(typeof faceapi === 'undefined') throw new Error('face-api.js no cargó');
+      await Promise.all([
+        faceapi.nets.tinyFaceDetector.loadFromUri(FACE_MODEL_URL),
+        faceapi.nets.faceLandmark68TinyNet.loadFromUri(FACE_MODEL_URL),
+        faceapi.nets.faceRecognitionNet.loadFromUri(FACE_MODEL_URL)
+      ]);
+      FaceEngine.ready = true;
+    }catch(err){
+      FaceEngine.failed = true;
+      console.warn('Reconocimiento facial no disponible en este contexto:', err);
+    }finally{
+      FaceEngine.loading = false;
+    }
+  })();
+  return FaceEngine.promise;
+}
+function loadImageFromDataUrl(url){
+  return new Promise((resolve,reject)=>{
+    const img = new Image();
+    img.onload = ()=>resolve(img);
+    img.onerror = reject;
+    img.src = url;
+  });
+}
+async function buildFaceMatcher(){
+  if(!FaceEngine.ready) return null;
+  const labeled = [];
+  for(const e of State.employees){
+    if(!e.data.photo) continue;
+    try{
+      const img = await loadImageFromDataUrl(e.data.photo);
+      const det = await faceapi.detectSingleFace(img, new faceapi.TinyFaceDetectorOptions())
+        .withFaceLandmarks(true).withFaceDescriptor();
+      if(det) labeled.push(new faceapi.LabeledFaceDescriptors(e.id, [det.descriptor]));
+    }catch(err){ /* esta foto no sirvió para calcular el rostro; se omite */ }
+  }
+  return labeled.length ? new faceapi.FaceMatcher(labeled, 0.6) : null;
+}
+
+/* ============================================================
+   CÁMARA — kiosco de check-in facial.
    La cámara se activa sola al entrar a la vista y queda transmitiendo
-   en vivo; "Validar" captura, verifica y registra la checada en un
-   solo paso, mostrando de inmediato nombre, tipo de checada y hora.
+   en vivo. Si el reconocimiento facial cargó y hay fotos de perfil,
+   el checador compara tu rostro contra ellas solo — nadie elige
+   nombre — y en cuanto encuentra una coincidencia suficiente,
+   captura, verifica y registra la checada mostrando nombre, tipo de
+   checada, hora y % de similitud. Sin reconocimiento disponible, cae
+   a un buscador de nombre por si alguien toca la pantalla.
 ============================================================ */
 // Estados: idle | starting | live | picking | verifying | result | done | error
-const Kiosk = {stream:null, state:'idle', errorMsg:'', result:null, containerId:null, token:0, search:''};
+const Kiosk = {
+  stream:null, state:'idle', errorMsg:'', result:null, containerId:null, token:0, search:'',
+  matcher:null, scanTimer:null, lastRegisteredId:null, lastRegisteredAt:0
+};
 
 function kioskMount(containerId){
   if(Kiosk.containerId === containerId){
@@ -1172,19 +1248,34 @@ function kioskMount(containerId){
 }
 function kioskTeardown(){
   Kiosk.token++;
+  kioskStopScanLoop();
   if(Kiosk.stream){ try{ Kiosk.stream.getTracks().forEach(t=>t.stop()); }catch(e){} Kiosk.stream=null; }
-  Kiosk.containerId = null; Kiosk.state = 'idle'; Kiosk.result = null;
+  Kiosk.containerId = null; Kiosk.state = 'idle'; Kiosk.result = null; Kiosk.matcher = null;
 }
 async function kioskStart(myToken){
   Kiosk.state = 'starting'; kioskRender();
   try{
     const stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'}, audio:false});
     if(myToken !== Kiosk.token){ stream.getTracks().forEach(t=>t.stop()); return; }
-    Kiosk.stream = stream; Kiosk.state = 'live'; kioskRender();
+    Kiosk.stream = stream;
   }catch(err){
     if(myToken !== Kiosk.token) return;
     Kiosk.state = 'error'; Kiosk.errorMsg = (err && err.message) || 'No se pudo acceder a la cámara.'; kioskRender();
+    return;
   }
+  // El reconocimiento facial es "best effort": si el CDN de los modelos está
+  // bloqueado o tarda demasiado, seguimos sin él (checador cae a buscar nombre).
+  try{ await Promise.race([initFaceEngine(), new Promise(r=>setTimeout(r, 9000))]); }catch(e){}
+  if(myToken !== Kiosk.token) return;
+  if(FaceEngine.ready){ Kiosk.matcher = await buildFaceMatcher(); }
+  if(myToken !== Kiosk.token) return;
+  Kiosk.state = 'live'; kioskRender();
+}
+function kioskAutoModeActive(){ return !!(FaceEngine.ready && Kiosk.matcher); }
+function kioskFallbackReason(){
+  if(FaceEngine.failed) return 'Reconocimiento facial no disponible aquí — busca tu nombre';
+  if(FaceEngine.ready && !Kiosk.matcher) return 'Aún no hay fotos de empleados para reconocer — busca tu nombre';
+  return 'Ubica tu rostro en la cámara y toca en cualquier parte';
 }
 function kioskOpenPicker(){
   if(Kiosk.state !== 'live') return;
@@ -1195,6 +1286,44 @@ function kioskOpenPicker(){
 async function kioskPickEmployee(employeeId){
   const emp = employeeById(employeeId);
   if(!emp) return;
+  await kioskRegisterAndShowResult(emp, null);
+}
+function kioskStartScanLoop(){
+  if(Kiosk.scanTimer || !kioskAutoModeActive()) return;
+  Kiosk.scanTimer = setInterval(kioskScanTick, 800);
+}
+function kioskStopScanLoop(){
+  if(Kiosk.scanTimer){ clearInterval(Kiosk.scanTimer); Kiosk.scanTimer = null; }
+}
+async function kioskScanTick(){
+  if(Kiosk.state !== 'live' || !Kiosk.stream || !Kiosk.matcher) return;
+  const container = document.getElementById(Kiosk.containerId);
+  const video = container && container.querySelector('#kioskVideo');
+  if(!video || video.readyState < 2) return;
+  let det;
+  try{
+    det = await faceapi.detectSingleFace(video, new faceapi.TinyFaceDetectorOptions())
+      .withFaceLandmarks(true).withFaceDescriptor();
+  }catch(err){ return; }
+  if(Kiosk.state !== 'live') return; // el estado pudo cambiar mientras detectábamos
+  const badge = container.querySelector('#kioskScanBadge');
+  if(!det){ if(badge) badge.textContent = 'Ubica tu rostro frente a la cámara'; return; }
+  const best = Kiosk.matcher.findBestMatch(det.descriptor);
+  const similarity = Math.max(0, Math.min(100, Math.round((1 - best.distance) * 100)));
+  if(best.label === 'unknown'){
+    if(badge) badge.textContent = `Comparando… ${similarity}% de coincidencia`;
+    return;
+  }
+  if(Kiosk.lastRegisteredId === best.label && (Date.now() - Kiosk.lastRegisteredAt) < 60000){
+    if(badge) badge.textContent = `${employeeById(best.label)?.data.name || 'Ya'} · checada ya registrada, gracias`;
+    return;
+  }
+  const emp = employeeById(best.label);
+  if(!emp) return;
+  kioskStopScanLoop();
+  kioskRegisterAndShowResult(emp, similarity);
+}
+async function kioskRegisterAndShowResult(emp, similarity){
   const myToken = Kiosk.token;
   Kiosk.state = 'verifying'; kioskRender();
   await new Promise(r=>setTimeout(r, 650));
@@ -1204,7 +1333,8 @@ async function kioskPickEmployee(employeeId){
   const snap = video ? compressImage(video, 240, 0.72) : null;
   const res = await registerCheckin(emp, snap);
   if(myToken !== Kiosk.token) return;
-  if(res){ Kiosk.result = Object.assign({employeeName: emp.data.name}, res); Kiosk.state = 'result'; }
+  Kiosk.lastRegisteredId = emp.id; Kiosk.lastRegisteredAt = Date.now();
+  if(res){ Kiosk.result = Object.assign({employeeName: emp.data.name, similarity}, res); Kiosk.state = 'result'; }
   else { Kiosk.state = 'done'; }
   kioskRender();
   setTimeout(()=>{
@@ -1236,6 +1366,7 @@ function kioskRender(){
     center = `<div class="kiosk-result">
       <div class="kiosk-check">${icon('check')}</div>
       <div class="kiosk-result-name">${escapeHtml(r.employeeName)}</div>
+      ${r.similarity!=null ? `<div class="kiosk-result-sim">${icon('check')} ${r.similarity}% de coincidencia facial</div>` : ''}
       <div class="kiosk-result-type">${escapeHtml(r.label)}</div>
       <div class="kiosk-result-time mono">${escapeHtml(r.time)}</div>
       ${r.warn? `<div class="kiosk-result-warn">${icon('alert')} Muy cercana a tu checada anterior — verifica si fue correcta</div>`:''}
@@ -1247,11 +1378,20 @@ function kioskRender(){
   } else if(Kiosk.state==='picking'){
     center = kioskPickerHtml();
   } else if(Kiosk.state==='live'){
-    center = `<div class="kiosk-tap-hint">
-      <div class="kiosk-tap-icon">${icon('check')}</div>
-      <div class="kiosk-msg-title">Toca la pantalla para marcar tu asistencia</div>
-      <div class="kiosk-msg-sub">Ubica tu rostro en la cámara y toca en cualquier parte</div>
-    </div>`;
+    center = kioskAutoModeActive() ? `
+      <div class="kiosk-scan-hint">
+        <div class="kiosk-scan-ring"><div class="kiosk-scan-ring-inner">${icon('camera')}</div></div>
+        <div class="kiosk-msg-title">Buscando tu rostro…</div>
+        <div class="kiosk-msg-sub" id="kioskScanBadge">Ubica tu rostro frente a la cámara</div>
+        <button type="button" class="kiosk-manual-link" data-kiosk-manual>¿No te reconoce? Busca tu nombre</button>
+      </div>
+    ` : `
+      <div class="kiosk-tap-hint">
+        <div class="kiosk-tap-icon">${icon('check')}</div>
+        <div class="kiosk-msg-title">Toca la pantalla para marcar tu asistencia</div>
+        <div class="kiosk-msg-sub">${kioskFallbackReason()}</div>
+      </div>
+    `;
   } else {
     center = '';
   }
@@ -1293,13 +1433,16 @@ function kioskRender(){
   const overlay = container.querySelector('#kioskOverlay');
   overlay.addEventListener('click', (e)=>{
     if(e.target.closest('[data-kiosk-fs],[data-kiosk-exit]')) return;
-    if(Kiosk.state==='live'){ kioskOpenPicker(); return; }
+    if(e.target.closest('[data-kiosk-manual]')){ kioskOpenPicker(); return; }
+    if(Kiosk.state==='live' && !kioskAutoModeActive()){ kioskOpenPicker(); return; }
     if(Kiosk.state==='picking' && !e.target.closest('.kiosk-picker')){ Kiosk.state='live'; kioskRender(); }
   });
   const retryBtn = container.querySelector('[data-kiosk-retry]');
   if(retryBtn) retryBtn.addEventListener('click', (e)=>{ e.stopPropagation(); kioskStart(Kiosk.token); });
 
   if(Kiosk.state==='picking') bindKioskPicker(container);
+
+  if(Kiosk.state==='live') kioskStartScanLoop(); else kioskStopScanLoop();
 
   tickClock();
 }
